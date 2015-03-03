@@ -11,7 +11,8 @@
 using namespace std;
 
 int main(){
-Puzzle<int> mySudoku("samplePuzzle.txt");
+Puzzle<int> mySudoku("medium.txt");
 cout << "Welcome to Sudoku the game, have fun!" << endl;
 mySudoku.play();
+cout << "Thanks for playing" << endl;
 }
