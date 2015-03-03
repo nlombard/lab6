@@ -1,0 +1,62 @@
+Nicholas Lombardo
+Lab 5
+2 / 25 / 2015
+
+	User:
+		When the main program is run, the user is presented with an output of the puzzle that was read in. The user is then asked to type in a row number, a column number, and a number to place in that location. The row and column number are easily found by the style of output of the board. The row number is to the far left and the column number is located at the top. When the player types the required info they are either presented with an error like if the row or column and or number is out of range, if the number trying to be placed already exists in the row, column, or mini grid. An error will also appear if the user is trying to change an original value. If no error appears the number is placed at the row and col specified and the user is asked to place another number. The game ends when there are no more zero's left in which to place numbers (meaning a win for the player beacuse each placment is check, the only solution is a full board) or if the player enters a valid row and column and a number to place value of -1.
+
+	Internally:
+		The Puzzle class is the basis of the game Sudoku. In the constructor of Puzzle is the read in file code. This code begins by intializing a data member called value of the type of the template of Puzzle. This value is used to store the read in values from the file. This is done by creating a stream variable that opens the desired file, passed in through a non-default constructor. Once the file is opened a for loop sets the value of the file to the variable value and then puts that into a vector, at the end of each row this vector is placed in a vector of vectors of type of the template, and then the row vector is cleared for the next row values to be taken as input. After the file is read then the vector is made and can be accessed using nameOfVec[i][j] notation. This allows for easy access to variables in the 2d vector. After the board is made it is set equal to a variable called original board that stores the locations of the original values so they can't be changed later. Next everything is called from the play function.
+	The play function is where the magic happens. In play there is a while
+loop that keeps looping as long as the player has not won. In this function
+the board is displayed and then the user is asked what to input. The values
+for row, col, and number to add to the board are then taken as input. If the
+number to add to the board is equal to zero then the function returns and play ends and the game is over. The program subracts one from the user's inputed values for row and col to place them in the computer board terms 0-8 instead of 1-9. After this the screen is cleared to make room for the new board. All the inputs are passed through a function that checks if the number desired can be placed at that position.
+	The checkValid function checks if a certain number can be placed at a
+certain location. First the range of row, col, and number placed is checked.
+If they are out of range then an error is printed and the user is asked to
+enter more values. In order to check row and column counts two arrays 10 long
+are created and intialized to all 0. Each row and column are run though and if
+a number exists in the row that location in the array is incremented by one.
+After this loop is finished the program checks the location of the array for
+the number trying to be placed. If there is anything greater than 0 there then
+the number can't be placed and the user is notified and asked to input new
+values. A simlar process is used to check the mini grid of the sudoku puzzle. 
+	CheckGrid checks a mini grid to see if more than one type of number will
+exist in the 3x3 grid. To check this intiger division is used to turn 0,1,2
+into 0; 3,4,5 into 1; 6,7,8 into 2; this allows mini grids to be determined by
+the row or col value divided by 3. The starting position for the row check
+then begins at (row/3) * 3 (or col) so for grid 0,1 or values between rows 0-2
+and cols 3-5. this would check the proper rows and cols. This function reurns
+1 if it is allowed to be placed. Though all of these placement functions a 0
+is allowed to be placed as long as it is not over an original value.
+	Finally a did win function is continually checked during each iteration.
+This function checks whether the board has any empty (0) spots left. If there
+are no spots left, beacuse the board is being checked at each placement and
+there is only one solution, the board is completed correctly.
+
+	Verification:
+		To test this I played around checking miniGrid, row and col checks.
+This worked and I wanted to check the end game scenario so I loaded a full
+board and it knew the game was over. Then I loaded a board missing one spot
+and after I inputed the required values to fill it the game knew that the
+board had been completed. I also tried filling in over original values which
+the program did not let me do (which is good!). The game runs well!
+
+	Worked well, what didn't, how:
+		I did have to ask my friends about how to check each miniGrid.
+Originally I was planning on returning a grid number based of row and col
+numbers and then figureing out a general grid seach algorithm based of that,
+but the integer division was a faster way to implement a simlar idea. Using an
+array instead of a vector for the count of the number in the rows was a good
+idea, because I didn't have to worry about the vector having a position for
+each number, the array has a slot for each number at initalization (because I
+made it 10 long).
+	The implementation of the templated Puzzle class was easy. The hard part
+which I did not figure out was trying to get the overloaded output operator to
+work for a templated class. But to template Puzzle template <typename T> was
+typed over everyfunction inplementation and over the class. This allows a T
+variable to be declared and at initalization be converted to the proper type.
+
+	
+	GitHub Repository: https://github.com/nlombard/lab5.git	
