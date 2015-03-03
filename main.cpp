@@ -7,12 +7,34 @@
 #include <fstream>
 #include <stdlib.h>
 #include "Puzzle.h"
-
+#include <string>
 using namespace std;
 
 int main(){
-Puzzle<int> mySudoku("medium.txt");
-cout << "Welcome to Sudoku the game, have fun!" << endl;
+string file;
+Puzzle<int> mySudoku("easy.txt");
+cout << endl << "easy.txt" << endl;
 mySudoku.play();
-cout << "Thanks for playing" << endl;
+cout << endl << "----------------------------" << endl << endl;
+Puzzle<int> mySudoku1("medium.txt");
+cout << endl << "medium.txt" << endl;
+mySudoku1.play();
+cout << endl << "----------------------------" << endl << endl;
+Puzzle<int> mySudoku2("cc1.txt");
+cout << endl << "cc1.txt" << endl;
+mySudoku2.play();
+cout << endl << "----------------------------" << endl << endl;
+cout << "Type file to use: (type q to quit): ";
+cin >> file;
+string quit;
+quit = 'q';
+if(file == quit){
+	return 1;
+}
+else{
+	Puzzle<int> mySudokuEnter(file.c_str());
+	cout << endl << file << endl;
+	mySudokuEnter.play();
+}
+return 0;
 }

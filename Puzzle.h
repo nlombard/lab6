@@ -169,15 +169,17 @@ void Puzzle<T>::play(){
 	int count = 1;
 	displayBoard();
 	while(!didWin3D()){
-		cout << "Round: " << count << endl;
-		checkPoss();
-		checkSingleValue();
-		singletonRow();
-		//singletonCol();
-		//singletonGrid();
-		displayBoard();
-		count ++;
+		//cout << "Round: " << count << endl;
+		checkPoss(); //update possible optinos
+		checkSingleValue(); //single searching algo
+		singletonRow(); //check for singletons in row
+		singletonCol(); //check for singletons in col
+		singletonGrid(); //check for singletons in grid
+		//displayBoard(); //display board
+		count ++; //update count
 	}
+	cout << "Solved at Round: " << count << endl;
+	displayBoard();
 }
 template <typename T>
 void Puzzle<T>::display3dCol(int r, int c){
@@ -320,7 +322,7 @@ for(int y=0;y<9;y+=3){
 		for(int k = 0; k < 3; k++){
 			for(int stack = 1; stack < 10; stack++){
 				if(Poss[stack][i][j] != 0){
-					sCount[Poss[stack][i][j]] ++; //increment the count
+					sCount[stack] ++; //increment the count
 				}
 			}
 			j++; //increment i and j to next spots
@@ -330,8 +332,6 @@ for(int y=0;y<9;y+=3){
 	}
 	single = find1(sCount);//find singleton value
 	if(single != 0){
-		startRow = (x/3)*3;
-		startCol = (y/3)*3;
 		int i1 = startRow;
 		int j1 = startCol;
 		for(int k1=0; k1<3;k1++){
@@ -340,6 +340,7 @@ for(int y=0;y<9;y+=3){
 					Poss[0][i1][j1] = single;
 				}
 			j1++;
+			j1 = startCol; //reset j1
 			}
 			i1++;
 		}		
