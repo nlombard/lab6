@@ -1,62 +1,115 @@
 Nicholas Lombardo
 Lab 5
-2 / 25 / 2015
+3 / 05 / 2015
+github: https://github.com/nlombard/lab6
+Completed singleton so please check those puzzles :D!
 
 	User:
-		When the main program is run, the user is presented with an output of the puzzle that was read in. The user is then asked to type in a row number, a column number, and a number to place in that location. The row and column number are easily found by the style of output of the board. The row number is to the far left and the column number is located at the top. When the player types the required info they are either presented with an error like if the row or column and or number is out of range, if the number trying to be placed already exists in the row, column, or mini grid. An error will also appear if the user is trying to change an original value. If no error appears the number is placed at the row and col specified and the user is asked to place another number. The game ends when there are no more zero's left in which to place numbers (meaning a win for the player beacuse each placment is check, the only solution is a full board) or if the player enters a valid row and column and a number to place value of -1.
-
+		When the main program is run the user is presented with a title of the file read in(3 are hard coded in, the files are included in the dir), and an output of the solved puzzle with a description of what round the sudoku was solved at. At the end of the three hard coded cases there is an option for the user to type the name of thier own file to check. The solver is then run on this file. 
 	Internally:
-		The Puzzle class is the basis of the game Sudoku. In the constructor of Puzzle is the read in file code. This code begins by intializing a data member called value of the type of the template of Puzzle. This value is used to store the read in values from the file. This is done by creating a stream variable that opens the desired file, passed in through a non-default constructor. Once the file is opened a for loop sets the value of the file to the variable value and then puts that into a vector, at the end of each row this vector is placed in a vector of vectors of type of the template, and then the row vector is cleared for the next row values to be taken as input. After the file is read then the vector is made and can be accessed using nameOfVec[i][j] notation. This allows for easy access to variables in the 2d vector. After the board is made it is set equal to a variable called original board that stores the locations of the original values so they can't be changed later. Next everything is called from the play function.
-	The play function is where the magic happens. In play there is a while
-loop that keeps looping as long as the player has not won. In this function
-the board is displayed and then the user is asked what to input. The values
-for row, col, and number to add to the board are then taken as input. If the
-number to add to the board is equal to zero then the function returns and play ends and the game is over. The program subracts one from the user's inputed values for row and col to place them in the computer board terms 0-8 instead of 1-9. After this the screen is cleared to make room for the new board. All the inputs are passed through a function that checks if the number desired can be placed at that position.
-	The checkValid function checks if a certain number can be placed at a
-certain location. First the range of row, col, and number placed is checked.
-If they are out of range then an error is printed and the user is asked to
-enter more values. In order to check row and column counts two arrays 10 long
-are created and intialized to all 0. Each row and column are run though and if
-a number exists in the row that location in the array is incremented by one.
-After this loop is finished the program checks the location of the array for
-the number trying to be placed. If there is anything greater than 0 there then
-the number can't be placed and the user is notified and asked to input new
-values. A simlar process is used to check the mini grid of the sudoku puzzle. 
-	CheckGrid checks a mini grid to see if more than one type of number will
-exist in the 3x3 grid. To check this intiger division is used to turn 0,1,2
-into 0; 3,4,5 into 1; 6,7,8 into 2; this allows mini grids to be determined by
-the row or col value divided by 3. The starting position for the row check
-then begins at (row/3) * 3 (or col) so for grid 0,1 or values between rows 0-2
-and cols 3-5. this would check the proper rows and cols. This function reurns
-1 if it is allowed to be placed. Though all of these placement functions a 0
-is allowed to be placed as long as it is not over an original value.
-	Finally a did win function is continually checked during each iteration.
-This function checks whether the board has any empty (0) spots left. If there
-are no spots left, beacuse the board is being checked at each placement and
-there is only one solution, the board is completed correctly.
+		The Puzzle constructor begins by reading in the values of a provided data file and
+placing them into a vector of vector of ints. This 2 dimensional board is then
+placed into the 0th layer of a vector of vector of vector of ints. The 3
+dimensional aspect of this board is for the values of possible numbers. For
+all the positions in the board that are unknown (i.e. = 0 in original file) a
+possible value is placed 'above' the respective cell (row,col) of the Sudoku
+board. If there is a number in the orginal board then a 0 is placed above that
+cell. A way to visualize this process is as a 3d cell. The bottom is the
+orignal board that is read in from a file and the depth is the possible values
+that go from layer 1 to layer 9 (layer 0 is the orignial board). To do this a
+simple vector filled with the values of each layer (1-9, and 0 for original
+values) is placed into a vector of vectors that consists of a layer, this
+layer is then pushed into the final cube, the Poss vector of a vector of a vector
+of ints. After the constructor a Poss cube is established that has every
+possible value as an option for the 0 values in the original puzzle.
+		
+		The play function is the function of Puzzle.h that contains the logic to solve the
+ sudoku puzzle. It begins by intializing a count to keep track of what round
+the puzzle was solved at. Next the board is displayed using displayBoard().
+			
+			displayBoard() formats the output of the sudoku puzzle. It uses
+				mods to print |s and -s every three numbers for division of
+				the sudoku board. Next the base layer (0) of the Poss board is
+				run through a for loop to output the values of each cell. 
+
+The play function does the following in a while loop that checks if the board
+is completed. The function didWin3D checks if the board is complete.
+			
+			didwin3D() checks if the board is complete by searching if the base
+				layer is filled with non-zero entries. Because each entry
+				placed is verified as the only option, they all must be there. So when the
+				board is full of non-zero answers there is only one way to solve a given 
+				board so it is complete.
+The loop begins by updating possible values through a function called checkPoss().
+			
+			checkPoss() calls the function called checkValid to see if a
+				certain number 1-9 is valid to be placed at a certain cell. If checkValid
+				returns 0 (meaning the number can't be placed) then a function called
+				removeNum is called that sets a certain 3d cell stack,row,col to 0. 
+
+After the update of the possible numbers per each cell a scanning algorithm is
+run that checks for how many possabilites are left above a given cell.
+
+			checkSingleValue() loops through the entire board and looks for
+				any cells with just one possability above a cell. If this is the case the
+				function holds onto the value in that cell (1-9) and places is it into the
+				base layer of the Poss 3d vector. This places the only option into the 
+				board and solves a cell.
+
+Next a series of singlton algorithms are run. These are run on each row, col,
+and grid to find if a single value exists in the row or col or grid at a
+location that has other possabilites, but it is the only place in the row,
+col, or grid that it is found. Basically because each number is needed per
+r,c,g then if there is a point where there is a single value left, no matter
+what else can be placed there, place that single value. Each singlton algo works generally the same:
+
+			singletonRow(), singletonCol(), and singletonGrid() each creates
+				an array with 10 entries and sets them all to zero. Then a set of for loops
+				searches each row for singletonRow, each col for singletonCol() and each 
+				grid for singletonGrid(). While searching it adds one to the count array in				   the position of that number. So if an 8 is found count[8] is incremented by 				  1. At the end of this search count contains the number of all possabilites 
+				in the	row, col, or grid. This array is sent to a function that finds and 
+				returns the position of a singleton value if it exists (i.e. count[i] = 1, 
+				in which i would be the singlton value). If a singlton exists it is then 
+				placed at that cell. The cell is found by comparing each cells stack of 
+				possible options to the singleton value when a cell matches the singlton 
+				value at it's n height in the stack of the 3d board cube then it places it
+				at the base layer of the board. Because it is a singleton this check works 
+				because only one cell in row, col, or grid will have that value.
+
+After the singleton algorithms are run the count for what round the solver is
+on is incremented, and the while loop continues until the board is solved.
+Once the board is solved it displays the round at which it was completed and
+the completed board.
 
 	Verification:
-		To test this I played around checking miniGrid, row and col checks.
-This worked and I wanted to check the end game scenario so I loaded a full
-board and it knew the game was over. Then I loaded a board missing one spot
-and after I inputed the required values to fill it the game knew that the
-board had been completed. I also tried filling in over original values which
-the program did not let me do (which is good!). The game runs well!
-
-	Worked well, what didn't, how:
-		I did have to ask my friends about how to check each miniGrid.
-Originally I was planning on returning a grid number based of row and col
-numbers and then figureing out a general grid seach algorithm based of that,
-but the integer division was a faster way to implement a simlar idea. Using an
-array instead of a vector for the count of the number in the rows was a good
-idea, because I didn't have to worry about the vector having a position for
-each number, the array has a slot for each number at initalization (because I
-made it 10 long).
-	The implementation of the templated Puzzle class was easy. The hard part
-which I did not figure out was trying to get the overloaded output operator to
-work for a templated class. But to template Puzzle template <typename T> was
-typed over everyfunction inplementation and over the class. This allows a T
-variable to be declared and at initalization be converted to the proper type.
-
+		For verification I check the puzzles given and looked for any
+discrepencies in the solution. Such errors are easy to spot given that a
+puzzle only has one accurate solution and the fact that you just have to find
+one number out of place to prove that the whole board is wrong and if one
+number is out of place it is likely that more are. Also, the way the algorithm
+places numbers that are the only possability for spaces the number placed has
+been vigorously check and belongs in that cell. For additional testing I found
+a hard puzzle from online and solved it and check the results.			
 	
-	GitHub Repository: https://github.com/nlombard/lab5.git	
+	Worked well, didn't, how:
+		What worked particularly well was trusting my board values. What I
+mean to say is that once a value is placed on the base layer of the board it
+has been throughly tested. This allows the function that checks for a solved
+board to just look if any 0s are remaining and not whether all values 1-9
+exist in each row, col, and grid, which would be very complex. What didn't
+work well at the start was the grid singlton solver. I messed up the for
+counters and ran into some infinite loops of trying to solve a puzzle in which
+a invaild entry was placed and the algoithms broke down at that point. To fix
+that I found the for loop iterator out of place and now the singlton grid
+properly solves. While my report is pretty detailed I will try and add to the
+how I implemented this solver. At first I thought I could put the entire
+singleton algorithm in one function. This I realized was not the best option,
+but the best option was to split it up into 3 functions, one for each entity
+of the Sudoku puzzle rows, cols, and grids. This breaking up allowd for
+simplicity in each algorithm. The scanning algo searches for places where
+there is exactly one possability and places that. The singleton is more
+complex and seaches a row, col, or grid for the existence of a single
+possability among all the entites of that row, col, or grid. If this value
+exists then it must be placed because each row, col, or grid needs one of each
+value.
+		

@@ -1,7 +1,7 @@
 //Puzzle.h
 //Nicholas Lombardo
 //Puzzle class for Sudoku game
-//stores puzzle and couts puzzle
+//stores puzzle and solves puzzle
 
 #ifndef PUZZLE_H
 #define PUZZLE_H
@@ -16,23 +16,21 @@ class Puzzle{
 	public:
 		Puzzle(string); //constructor
 		void displayBoard(); //display function for printing board
-		void display3dCol(int, int);
+		void display3dCol(int, int); //display poss nums for a certain row,col position on board
 		int checkValid(int, int, int); //checks whether placing certain number in grid is valid
 		int checkGrid(int,int,int); //checks if mini grid is valid for placement of number
-		void play(); //main game to play calls other functions to simulate soduku
-		void checkPoss();
-		void removeNum(int, int, int);
-		void placeNum(int, int, int);
+		void play(); //main fcn to solve puzzle
+		void checkPoss(); //checks and removes possible values from stack of poss values
+		void removeNum(int, int, int); //set a certain value of the possible values to 0
 		int didWin3D(); //did win function to check if there are no zeros on the board
 		void checkSingleValue(); //check whole board for single values
-		void singleton();
-		int find1(int[10]);
-		void singletonRow();
-		void singletonCol();
-		void singletonGrid();
+		int find1(int[10]); //finds a singleton value in an array
+		void singletonRow(); //counts for occurences of possabilities in row and places the singleton
+		void singletonCol(); //counts for possablilities in col and places the singleton
+		void singletonGrid(); //counts for possabilities in grid and places the singleton
 	private:
 		vector<vector<  T > > Board; //storage for Board, a 2D vector
-		vector<vector<vector<  T > > > Poss;
+		vector<vector<vector<  T > > > Poss; //storage for Possabilities board, includes a stacking of possible values over each space in the original board
 		vector<vector < T > > OriginalBoard; //storage for OriginalBoard, a 2D vector of original values
 };
 
@@ -65,12 +63,12 @@ Puzzle<T>::Puzzle(string dataFile){ //constructor
 					else
 						rowVec.push_back(0); //no values because number is already set
 			}	
-			twoDimBoard.push_back(rowVec);
-			rowVec.clear();
+			twoDimBoard.push_back(rowVec); //push row vec of possible values into the twoDim board
+			rowVec.clear(); //clear row and repeat
 		}
-		Poss.push_back(twoDimBoard);
-		rowVec.clear();
-		twoDimBoard.clear();
+		Poss.push_back(twoDimBoard); //push "layer" into 3d Poss board
+		rowVec.clear(); //clear row
+		twoDimBoard.clear(); //clear 2d and start again
 	}
 }
 template <typename T>
@@ -91,7 +89,7 @@ void Puzzle<T>::displayBoard(){	//display function
 			cout << "| "; //every three add a pipe for seperation of output
 			}
 		}
-		if(i%3 == 2){
+		if(i%3 == 2){ //every three add seperators
 			cout << endl << "    - - -   - - -   - - -"; //formating
 		}
 			cout << endl;
@@ -99,7 +97,7 @@ void Puzzle<T>::displayBoard(){	//display function
 	cout << endl;
 }
 template <typename T>
-int Puzzle<T>::checkValid(int x, int y, int z){
+int Puzzle<T>::checkValid(int x, int y, int z){ //checks for vaild placement
 	if((x < 0)||(x > 9)||(y < 0)||(y > 9)||(z>9)||(z<0)){
 	//	cout << "Error: row or col and/or num out of range!" << endl;
 		return 0; //leave if numbers are out of bounds		
@@ -141,9 +139,9 @@ int Puzzle<T>::checkValid(int x, int y, int z){
 	return 1; // if no errors then it can be placed
 }
 template <typename T>
-int Puzzle<T>::checkGrid(int x, int y, int z){
+int Puzzle<T>::checkGrid(int x, int y, int z){ //checks grid for valid placement
 	int i = (x/3)*3; //start position using integer division to find correct Grid
-	int j = (y/3)*3;
+	int j = (y/3)*3; 
 	int count[10];
 	for(int l = 0; l < 10; l++){
 		count[l] = 0; //initalize count values to zero
@@ -165,27 +163,25 @@ int Puzzle<T>::checkGrid(int x, int y, int z){
 	return 1; // if no errors then return 1
 }
 template <typename T>
-void Puzzle<T>::play(){
+void Puzzle<T>::play(){ //main function for solving
 	int count = 1;
 	displayBoard();
 	while(!didWin3D()){
-		//cout << "Round: " << count << endl;
 		checkPoss(); //update possible optinos
 		checkSingleValue(); //single searching algo
 		singletonRow(); //check for singletons in row
 		singletonCol(); //check for singletons in col
 		singletonGrid(); //check for singletons in grid
-		//displayBoard(); //display board
 		count ++; //update count
 	}
 	cout << "Solved at Round: " << count << endl;
 	displayBoard();
 }
 template <typename T>
-void Puzzle<T>::display3dCol(int r, int c){
+void Puzzle<T>::display3dCol(int r, int c){ //displays a row of poss. values for a certain square
 	cout << "At locatioin " << r+1 << ", " << c+1 << " :" << endl;
 	for(int i = 0; i < 10; i ++){
-		cout << Poss[i][r][c] << endl;
+		cout << Poss[i][r][c] << endl; //print poss. values
 	}
 }
 	
@@ -200,12 +196,12 @@ int Puzzle<T>::didWin3D(){ //did win function to check if there are no zeros on 
 	return 1; //return 1 if after the whole board is checked there is no zeros (empty spots)
 }
 template <typename T>
-void Puzzle<T>::checkPoss(){
-	for(int i=0; i<9; i++){
-		for(int j=0; j<9; j++){
-			for(int num=1; num<10; num++){
+void Puzzle<T>::checkPoss(){ //remove poss. options from stack of poss options for each square
+	for(int i=0; i<9; i++){ //row
+		for(int j=0; j<9; j++){ //col
+			for(int num=1; num<10; num++){ //number of values
 				if(checkValid(i,j,num)==0){
-					removeNum(num,i,j);
+					removeNum(num,i,j); //set number that can't be placed to zero in the poss stack 
 				}
 			}
 		}
@@ -214,7 +210,7 @@ void Puzzle<T>::checkPoss(){
 }
 template <typename T>
 void Puzzle<T>::removeNum(int num, int row, int col){
-	Poss[num][row][col] = 0;
+	Poss[num][row][col] = 0; //set entry to zero
 }
 template <typename T>
 void Puzzle<T>::checkSingleValue(){ //check whole board for single values
@@ -245,19 +241,19 @@ void Puzzle<T>::singletonRow(){
 	int single = 0;
 	for(int i=0; i<9; i++){ //row
 		for(int j=0; j<9; j++){ //col 
-			for(int k=0; k<10; k++){ //3d
+			for(int k=0; k<10; k++){ //3d stack
 				if(Poss[k][i][j] != 0){
 					count[k]++; //count at location increased
 					num = Poss[k][i][j]; //grab number to be used if count equals one below
 				}
 			}
 		}
-		single = find1(count);
-		if(single != 0){
+		single = find1(count); //find single value
+		if(single != 0){ //if single value is not zero
 		//	for(int stack=1;stack<10;stack++){
 			for(int cols=0;cols<9;cols++){ //search cols for singleton value to place
 				if(Poss[single][i][cols] == single){ //if the possition in the stack of possabilities is equal to the singleton then place it	
-					Poss[0][i][cols] = single;
+					Poss[0][i][cols] = single; //place singleton value in row
 				}
 			}
 		//	}
@@ -284,7 +280,7 @@ void Puzzle<T>::singletonCol(){
 				}
 			}
 		}
-		single = find1(count);
+		single = find1(count); //find singlton value
 		if(single != 0){
 		//	for(int stack=1;stack<10;stack++){
 			for(int rows=0;rows<9;rows++){ //search cols for singleton value to place
@@ -309,8 +305,8 @@ void Puzzle<T>::singletonGrid(){
 	int count[10];
 	int single = 0;
 	
-for(int x=0;x<9;x+=3){
-for(int y=0;y<9;y+=3){
+for(int x=0;x<9;x+=3){ //check every grid with different start postions 0,3,6
+for(int y=0;y<9;y+=3){ //check every grid with different start postions 0,3,6
 	i = (x/3)*3; //start position using integer division to find correct Grid
 	j = (y/3)*3;
 	startRow = i;
@@ -332,8 +328,8 @@ for(int y=0;y<9;y+=3){
 	}
 	single = find1(sCount);//find singleton value
 	if(single != 0){
-		int i1 = startRow;
-		int j1 = startCol;
+		int i1 = startRow; //intialize i1 to first row of grid
+		int j1 = startCol; //initalize j1 to first col of grid
 		for(int k1=0; k1<3;k1++){
 			for(int k2=0;k2<3;k2++){
 				if(Poss[single][i1][j1] == single){
@@ -354,7 +350,7 @@ template <typename T>
 int Puzzle<T>::find1(int count[10]){ //finds value of 1 in count
 	for(int i=0;i<10;i++){
 		if(count[i] == 1){
-			return(i);
+			return(i); //returns location of singleton value
 		}
 	}
 	return(0);
